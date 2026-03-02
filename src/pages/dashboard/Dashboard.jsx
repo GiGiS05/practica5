@@ -3,6 +3,7 @@ import { useTaskStore } from '../../store/taskStore';
 import { useTasks } from '../../hooks/useTasks';
 import TaskFilters from '../../components/tasks/TaskFilters';
 import TaskList from '../../components/tasks/TaskList';
+import TaskStats from '../../components/tasks/TaskStats';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 export default function Dashboard() {
@@ -48,6 +49,7 @@ export default function Dashboard() {
         </p>
       </div>
 
+      <TaskStats tasks={tasks} />
       <TaskFilters />
 
       <TaskList tasks={filteredTasks} />
