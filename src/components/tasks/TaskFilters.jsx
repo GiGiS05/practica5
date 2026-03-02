@@ -2,10 +2,42 @@ import { useTaskStore } from '../../store/taskStore';
 import { FILTERS, CATEGORIES } from '../../utils/constants';
 
 export default function TaskFilters() {
-  const { currentFilter, currentCategory, setFilter, setCategory } = useTaskStore();
+  const { 
+    currentFilter, 
+    currentCategory, 
+    searchQuery, 
+    setFilter, 
+    setCategory, 
+    setSearchQuery 
+  } = useTaskStore();
 
   return (
     <div className="card mb-6">
+      {/* Barra de búsqueda */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Buscar tarea
+        </label>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Buscar por título o descripción..."
+            className="input-field pl-10"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-5 w-5 text-gray-400 absolute left-3 top-3" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Filtro por estado */}
         <div>

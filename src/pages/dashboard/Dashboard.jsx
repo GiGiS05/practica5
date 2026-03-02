@@ -7,17 +7,28 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 export default function Dashboard() {
   const user = useAuthStore((state) => state.user);
-  const { tasks, currentFilter, currentCategory, loading } = useTaskStore();
+  const { tasks, currentFilter, currentCategory, searchQuery, loading } = useTaskStore();
 
   // Hook que se suscribe a las tareas en tiempo real
   useTasks();
 
   // Aplicar filtros seleccionados
   const filteredTasks = tasks.filter((task) => {
+    // Filtro por estado
     if (currentFilter === 'completed' && !task.completed) return false;
     if (currentFilter === 'pending' && task.completed) return false;
 
+    // Filtro por categoría
     if (currentCategory !== 'all' && task.category !== currentCategory) return false;
+
+    // Filtro por búsqueda 
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchesTitle = task.title.toLowerCase().includes(query);
+      const matchesDescription = task.description && task.description.toLowerCase().includes(query);
+      
+      if (!matchesTitle && !matchesDescription) return false;
+    }
 
     return true;
   });
