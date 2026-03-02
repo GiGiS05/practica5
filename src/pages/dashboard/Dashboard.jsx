@@ -1,23 +1,30 @@
 import { useAuthStore } from '../../store/authStore';
 import { useTaskStore } from '../../store/taskStore';
+import { useTasks } from '../../hooks/useTasks';
 import TaskFilters from '../../components/tasks/TaskFilters';
 import TaskList from '../../components/tasks/TaskList';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 export default function Dashboard() {
   const user = useAuthStore((state) => state.user);
-  const { tasks, currentFilter, currentCategory } = useTaskStore();
+  const { tasks, currentFilter, currentCategory, loading } = useTaskStore();
 
-  // Aplicar filtros a las tareas
+  // Hook que se suscribe a las tareas en tiempo real
+  useTasks();
+
+  // Aplicar filtros seleccionados
   const filteredTasks = tasks.filter((task) => {
-    // Filtro por estado (completadas/pendientes)
     if (currentFilter === 'completed' && !task.completed) return false;
     if (currentFilter === 'pending' && task.completed) return false;
 
-    // Filtro por categoría
     if (currentCategory !== 'all' && task.category !== currentCategory) return false;
 
     return true;
   });
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="max-w-7xl mx-auto p-6">

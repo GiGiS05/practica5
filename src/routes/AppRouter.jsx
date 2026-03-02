@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { useAuthStore } from './store/authStore';
+
 
 import Layout from '../components/layout/Layout';
 import Login from '../pages/auth/Login';
@@ -9,6 +9,7 @@ import Dashboard from '../pages/dashboard/Dashboard';
 import TaskDetails from '../pages/dashboard/TaskDetails';
 import ProtectedRoute from './ProtectedRoute';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useAuthStore } from '../store/authStore';
 
 export default function AppRouter() {
   const { initializeAuth, loading } = useAuthStore();
