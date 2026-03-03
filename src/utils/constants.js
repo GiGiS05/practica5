@@ -2,7 +2,7 @@
 export const CATEGORIES = [
   { id: 'work', label: 'Trabajo', color: 'blue' },
   { id: 'personal', label: 'Personal', color: 'green' },
-  { id: 'shopping', label: 'Compras', color: 'purple' },
+  { id: 'shopping', label: 'Compras', color: 'violet' },
   { id: 'other', label: 'Otros', color: 'gray' }
 ];
 

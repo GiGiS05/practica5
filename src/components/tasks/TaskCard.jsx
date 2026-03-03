@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { updateTask, deleteTask } from '../../services/taskService';
 import { CATEGORIES } from '../../utils/constants';
 import { getDueDateLabel, isOverdue } from '../../utils/dateHelpers';
+import { useUIStore } from '../../store/uiStore';
 
 export default function TaskCard({ task }) {
+  const { theme } = useUIStore();
   const category = CATEGORIES.find(c => c.id === task.category) || CATEGORIES.find(c => c.id === 'other');
   const isTaskOverdue = isOverdue(task.dueDate, task.completed);
 
@@ -11,8 +14,10 @@ export default function TaskCard({ task }) {
     e.preventDefault(); // Evitar que el Link navegue
     try {
       await updateTask(task.id, { completed: !task.completed });
+      toast.success(task.completed ? 'Tarea marcada como pendiente' : 'Tarea completada');
     } catch (error) {
       console.error('Error al actualizar tarea:', error);
+      toast.error('Error al actualizar el estado de la tarea');
     }
   };
 
@@ -21,8 +26,10 @@ export default function TaskCard({ task }) {
     if (window.confirm('¿Estás seguro de eliminar esta tarea?')) {
       try {
         await deleteTask(task.id);
+        toast.success('Tarea eliminada correctamente');
       } catch (error) {
         console.error('Error al eliminar tarea:', error);
+        toast.error('Error al eliminar la tarea');
       }
     }
   };
@@ -33,7 +40,7 @@ export default function TaskCard({ task }) {
       className={`block transition-all hover:scale-[1.01] duration-200 outline-none focus:ring-2 focus:ring-blue-500 rounded-lg`}
     >
       <div className={`card hover:shadow-lg transition-shadow border-l-4 
-        ${task.completed ? 'opacity-60 bg-gray-50' : 'bg-white'} 
+        ${task.completed ? `opacity-60 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}` : `${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`} 
         ${isTaskOverdue ? 'border-red-500' : `border-${category?.color || 'gray'}-500`}
       `}>
         <div className="flex justify-between items-start">
@@ -50,13 +57,13 @@ export default function TaskCard({ task }) {
               )}
             </div>
             
-            <h3 className={`text-lg font-bold mb-1 truncate ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+            <h3 className={`text-lg font-bold mb-1 truncate ${task.completed ? 'line-through text-gray-500' : `${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}`}>
               {task.title}
             </h3>
 
             {/* Descripción */}
             {task.description && (
-              <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+              <p className={`text-sm mb-3 line-clamp-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                 {task.description}
               </p>
             )}
@@ -77,7 +84,7 @@ export default function TaskCard({ task }) {
               className={`p-2 rounded-full transition-colors duration-200 ${
                 task.completed 
                   ? 'bg-green-100 text-green-600 hover:bg-green-200' 
-                  : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-green-500'
+                  : `${theme === 'dark' ? 'bg-gray-600 text-gray-300 hover:bg-gray-500 hover:text-green-300' : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-green-500'}`
               }`}
               title={task.completed ? "Marcar como pendiente" : "Marcar como completada"}
             >

@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/authStore';
+import { useUIStore } from '../../store/uiStore';
 import { createTask, updateTask } from '../../services/taskService';
 import { CATEGORIES, PRIORITIES } from '../../utils/constants';
 
 export default function TaskForm({ onClose, taskToEdit = null }) {
   const user = useAuthStore((state) => state.user);
+  const { theme } = useUIStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -46,42 +49,58 @@ export default function TaskForm({ onClose, taskToEdit = null }) {
       dueDate: data.dueDate ? new Date(data.dueDate) : null
     };
 
-    let result;
+    try {
+      let result;
 
-    if (isEditing) {
-      // Modo edición: actualizar tarea existente
-      result = await updateTask(taskToEdit.id, taskData);
-    } else {
-      // Modo creación: crear nueva tarea
-      result = await createTask(user.uid, taskData);
-    }
+      if (isEditing) {
+        // Modo edición: actualizar tarea existente
+        result = await updateTask(taskToEdit.id, taskData);
+        if (result.success) {
+          toast.success('Tarea actualizada exitosamente');
+        } else {
+          throw new Error('Error al actualizar la tarea');
+        }
+      } else {
+        // Modo creación: crear nueva tarea
+        result = await createTask(user.uid, taskData);
+        if (result.success) {
+          toast.success('Tarea creada exitosamente');
+        } else {
+          throw new Error('Error al crear la tarea');
+        }
+      }
 
-    if (result.success) {
       onClose();
-    } else {
-      setError(isEditing ? 'Error al actualizar la tarea' : 'Error al crear la tarea');
+    } catch (err) {
+      console.error(err);
+      const message = isEditing ? 'Error al actualizar la tarea' : 'Error al crear la tarea';
+      toast.error(message);
+      setError(message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
+  const inputClass = `input-field ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : ''}`;
+  const labelClass = `block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`;
+
   return (
-    <div className="card">
+    <div className={`card ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
       {/* Header del formulario */}
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-gray-800">
+        <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>
           {isEditing ? 'Editar Tarea' : 'Nueva Tarea'}
         </h3>
         <button
           onClick={onClose}
-          className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+          className={`text-2xl leading-none ${theme === 'dark' ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'}`}
         >
           &times;
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+        <div className={`${theme === 'dark' ? 'bg-red-700 border-red-700 text-red-50':'bg-red-50  border-red-200  text-red-700'} border px-4 py-3 rounded-lg mb-4`}>
           {error}
         </div>
       )}
@@ -89,12 +108,12 @@ export default function TaskForm({ onClose, taskToEdit = null }) {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Campo: Título */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className={labelClass}>
             Título *
           </label>
           <input
             type="text"
-            className="input-field"
+            className={inputClass}
             placeholder="Ej: Completar informe mensual"
             {...register('title', {
               required: 'El título es obligatorio',
@@ -111,11 +130,11 @@ export default function TaskForm({ onClose, taskToEdit = null }) {
 
         {/* Campo: Descripción */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className={labelClass}>
             Descripción
           </label>
           <textarea
-            className="input-field"
+            className={inputClass}
             rows="3"
             placeholder="Descripción detallada de la tarea..."
             {...register('description')}
@@ -125,11 +144,11 @@ export default function TaskForm({ onClose, taskToEdit = null }) {
         {/* Grid de 3 columnas: Categoría, Prioridad, Fecha */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className={labelClass}>
               Categoría *
             </label>
             <select
-              className="input-field"
+              className={inputClass}
               {...register('category', { required: true })}
             >
               {CATEGORIES.map((cat) => (
@@ -141,11 +160,11 @@ export default function TaskForm({ onClose, taskToEdit = null }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className={labelClass}>
               Prioridad *
             </label>
             <select
-              className="input-field"
+              className={inputClass}
               {...register('priority', { required: true })}
             >
               {PRIORITIES.map((priority) => (

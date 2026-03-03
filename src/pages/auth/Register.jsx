@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { registerUser } from '../../services/authService';
 import { useAuthStore } from '../../store/authStore';
+import { useUIStore } from '../../store/uiStore';
 
 export default function Register() {
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
+  const { theme } = useUIStore();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -23,25 +26,30 @@ export default function Register() {
     if (result.success) {
       // Guarda usuario en Zustand y redirige a dashboard
       setUser(result.user);
+      toast.success('Cuenta creada exitosamente');
       navigate('/dashboard');
     } else {
       setError(result.error);
+      toast.error('Error al registrarse: ');
     }
 
     setLoading(false);
   };
 
+  const inputClass = `input-field ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : ''}`;
+  const labelClass = `block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="card max-w-md w-full">
+    <div className={`min-h-screen flex items-center justify-center p-4 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'}`}>
+      <div className={`card max-w-md w-full ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Crear Cuenta</h1>
-          <p className="text-gray-600 mt-2">Regístrate para comenzar</p>
+          <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-800'}`}>Crear Cuenta</h1>
+          <p className={`mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Regístrate para comenzar</p>
         </div>
 
         {/* Mensaje de error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+          <div className={`${theme === 'dark' ? 'bg-red-700 border-red-700 text-red-50':'bg-red-50  border-red-200  text-red-700'} border px-4 py-3 rounded-lg mb-4`}>
             {error}
           </div>
         )}
@@ -49,12 +57,12 @@ export default function Register() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Campo de Nombre Completo */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className={labelClass}>
               Nombre Completo
             </label>
             <input
               type="text"
-              className="input-field"
+              className={inputClass}
               placeholder="Ingresa tu nombre completo"
               {...register('name', {
                 required: 'El nombre es obligatorio',
@@ -71,12 +79,12 @@ export default function Register() {
 
           {/* Campo de email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className={labelClass}>
               Correo electrónico
             </label>
             <input
               type="email"
-              className="input-field"
+              className={inputClass}
               placeholder="tu@email.com"
               {...register('email', {
                 required: 'El correo es obligatorio',
@@ -93,12 +101,12 @@ export default function Register() {
 
           {/* Campo de contraseña */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className={labelClass}>
               Contraseña
             </label>
             <input
               type="password"
-              className="input-field"
+              className={inputClass}
               placeholder="••••••••"
               {...register('password', {
                 required: 'La contraseña es obligatoria',
