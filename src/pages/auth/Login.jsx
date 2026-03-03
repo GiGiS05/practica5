@@ -108,7 +108,7 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="text-center mt-6 text-gray-600">
+        <p className={`text-center mt-6 ${theme === 'dark'? 'text-gray-400':'text-gray-600'}`}>
           ¿No tienes cuenta?{' '}
           <Link to="/register" className="text-blue-600 hover:underline font-medium">
             Regístrate aquí

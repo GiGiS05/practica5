@@ -176,12 +176,12 @@ export default function TaskForm({ onClose, taskToEdit = null }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className={labelClass}>
               Fecha de vencimiento
             </label>
             <input
               type="date"
-              className="input-field"
+              className={inputClass}
               {...register('dueDate')}
             />
           </div>

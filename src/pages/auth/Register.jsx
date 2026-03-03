@@ -130,7 +130,7 @@ export default function Register() {
           </button>
         </form>
 
-        <p className="text-center mt-6 text-gray-600">
+        <p className={`text-center mt-6 ${theme === 'dark'? 'text-gray-400':'text-gray-600'}`}>
           ¿Ya tienes cuenta?{' '}
           <Link to="/login" className="text-blue-600 hover:underline font-medium">
             Inicia sesión aquí

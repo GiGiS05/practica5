@@ -187,7 +187,7 @@ function TaskDetails() {
         </div>
 
         {/* Botón de toggle completado */}
-        <div className="border-t pt-6 mt-6">
+        <div className={`border-t pt-6 mt-6 ${theme === 'dark' ? 'border-gray-700' : ''}`}>
           <button
             onClick={handleToggleComplete}
             className={task.completed ? 'btn-secondary w-full' : 'btn-primary w-full'}
